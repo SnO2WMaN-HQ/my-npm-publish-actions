@@ -6,6 +6,7 @@ on:
 
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -16,6 +17,7 @@ jobs:
       - run: yarn build
 
   test:
+    name: Test on Node.js v${{ matrix.node }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
