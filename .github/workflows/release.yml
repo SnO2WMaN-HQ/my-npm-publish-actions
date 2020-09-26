@@ -46,7 +46,7 @@ jobs:
         id: cpr
         if: ${{ success() }}
         with:
-          branch: 'releases/${{ steps.current-version.outputs.version }}'
+          branch: 'releases/v${{ steps.current-version.outputs.version }}'
           delete-branch: true
           title: 'v${{ steps.current-version.outputs.version }}'
           body: $(yarn conventional-changelog)
