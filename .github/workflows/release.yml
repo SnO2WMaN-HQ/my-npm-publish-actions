@@ -49,14 +49,14 @@ jobs:
       - run: yarn install --frozen-lockfile
 
       - name: Get current package version
-        id: current-version
+        id: package-version
         run: |
           version=$(node -p 'require("./package.json").version')
           echo "::set-output name=version::${version}"
 
       - id: conventional-changelog
         run: |
-          echo "::set-output name=body::$(yarn bin conventional-changelog)"
+          echo "::set-output name=body::$(eval $(yarn bin conventional-changelog))"
 
       - id: npm-pack
         run: |
@@ -65,8 +65,8 @@ jobs:
       - uses: actions/create-release@v1
         id: create-release
         with:
-          tag_name: ${{ github.ref }}
-          release_name: v${{ github.ref }}
+          tag_name: ${{ steps.package-version.outputs.tarball }}
+          release_name: v${{ steps.package-version.outputs.tarball }}
           body: ${{ steps.conventional-changelog.outputs.body }}
           draft: false
         env:
@@ -74,7 +74,7 @@ jobs:
       - uses: actions/upload-release-asset@v1
         id: upload-release-asset
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ steps.create-release.outputs.upload_url }}
           asset_path: ./${{ steps.npm-pack.outputs.tarball }}
           asset_name: ${{ steps.npm-pack.outputs.tarball }}
           asset_content_type: application/gzip
