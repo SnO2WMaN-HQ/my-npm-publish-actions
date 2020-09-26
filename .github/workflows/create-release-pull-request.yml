@@ -33,24 +33,43 @@ jobs:
         run: npm version $($(yarn bin conventional-recommended-bump) -p conventionalcommits)
 
       - name: Get current package version
-        id: current-version
+        id: package-version
+        run: |
+          version=$(node -p 'require("./package.json").version')
+          echo "::set-output name=version::${version}"
+
+      - name: Get current package version
+        id: package-version
         run: |
           version=$(node -p 'require("./package.json").version')
           echo "::set-output name=version::${version}"
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
-        id: cpr
-        if: ${{ success() }}
         with:
-          branch: 'releases/v${{ steps.current-version.outputs.version }}'
+          branch: releases/v${{ steps.package-version.outputs.version }}
           delete-branch: true
-          title: 'v${{ steps.current-version.outputs.version }}'
+          title: v${{ steps.package-version.outputs.version }}
           body: $(yarn conventional-changelog)
           labels: |
             release
 
-      - name: Pull Request Info
-        run: |
-          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
-          echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
+      - uses: actions/create-release@v1
+        id: create-release
+        with:
+          tag_name: v${{ steps.package-version.outputs.version }}
+          release_name: v${{ steps.package-version.outputs.version }}
+          body: ${{ steps.conventional-changelog.outputs.body }}
+          draft: false
+          prerelease: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/upload-release-asset@v1
+        id: upload-release-asset
+        with:
+          upload_url: ${{ steps.create-release.outputs.upload_url }}
+          asset_path: ./${{ steps.npm-pack.outputs.tarball }}
+          asset_name: ${{ steps.npm-pack.outputs.tarball }}
+          asset_content_type: application/gzip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
