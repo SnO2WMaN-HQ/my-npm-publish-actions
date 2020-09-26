@@ -1,6 +1,6 @@
 {
   "name": "@sno2wman-hq/npm-publish-with-gh-actions",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": [
