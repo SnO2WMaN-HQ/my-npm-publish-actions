@@ -1,0 +1,12 @@
+{
+  "root": true,
+  "extends": [
+    "plugin:@shopify/node",
+    "plugin:@shopify/typescript",
+    "plugin:@shopify/jest",
+    "plugin:@shopify/prettier"
+  ],
+  "rules": {
+    "import/order": [0]
+  }
+}

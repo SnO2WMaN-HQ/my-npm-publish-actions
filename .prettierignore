@@ -1,0 +1,7 @@
+# Outputs
+dist/
+lib/
+CHANGELOG.md
+
+# Test
+coverage/
