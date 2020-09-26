@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: "Version"
+        description: 'Version'
         required: false
 
 env:
@@ -18,7 +18,6 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: 12
-          registry-url: "https://npm.pkg.github.com"
       - name: Git Identity
         run: |
           git config --global user.name 'SnO2WMaN'
@@ -47,9 +46,9 @@ jobs:
         id: cpr
         if: ${{ success() }}
         with:
-          branch: "releases/${{ steps.current-version.outputs.version }}"
+          branch: 'releases/${{ steps.current-version.outputs.version }}'
           delete-branch: true
-          title: "v${{ steps.current-version.outputs.version }}"
+          title: 'v${{ steps.current-version.outputs.version }}'
           body: $(yarn conventional-changelog)
           labels: |
             release
