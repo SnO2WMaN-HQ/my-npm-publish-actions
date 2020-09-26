@@ -27,7 +27,7 @@ jobs:
 
       - name: Automatically selected version by conventional commits
         if: ${{ !github.event.inputs.version }}
-        run: npm version $(yarn conventional-recommended-bump -p conventionalcommits)
+        run: npm version $($(yarn bin conventional-recommended-bump) -p conventionalcommits)
 
       - name: Get current package version
         id: current-version
