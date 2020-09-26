@@ -1,14 +1,16 @@
-name: Publish
+name: Release
 
 on:
-  workflow_dispatch:
+  pull_request:
+    branches:
+      - master
+    types: [closed]
 
 env:
   CI: true
 
 jobs:
-  publish-github-packages:
-    name: Publish to GitHub Packages
+  publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -16,9 +18,31 @@ jobs:
         with:
           node-version: 12
           registry-url: 'https://npm.pkg.github.com'
+      - name: Git Identity
+        run: |
+          git config --global user.name 'SnO2WMaN'
+          git config --global user.email 'SnO2WMaN@users.noreply.github.com'
       - run: yarn install --frozen-lockfile
-      - run: yarn build
 
-      - run: yarn publish
+      - uses: actions/create-release@v1
+        id: create-release
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          body: ${{ steps.conventional-changelog.outputs.body }}
+          draft: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/upload-release-asset@v1
+        id: upload-release-asset
+        with:
+          upload_url: ${{ steps.create-release.outputs.upload_url }}
+          asset_path: ./${{ steps.npm-pack.outputs.tarball }}
+          asset_name: ${{ steps.npm-pack.outputs.tarball }}
+          asset_content_type: application/gzip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
