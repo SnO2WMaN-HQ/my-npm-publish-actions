@@ -1,0 +1,44 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version"
+        required: false
+
+env:
+  CI: true
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+          registry-url: "https://npm.pkg.github.com"
+      - run: yarn install --frozen-lockfile
+      - run: echo "$(which git)"
+      - if: github.event.inputs.version
+        run: npm version ${{ github.event.inputs.version }}
+      - if: ${{ !github.event.inputs.version }}
+        run: npm version $(yarn conventional-recommended-bump -p conventionalcommits)
+      - id: current-version
+        run: |
+          version=$(node -p 'require("./package.json").version')
+          echo "::set-output name=version::${version}"
+      - uses: peter-evans/create-pull-request@v3
+        id: cpr
+        if: ${{ success() }}
+        with:
+          branch: "releases/${{ steps.current-version.outputs.current-version }}"
+          delete-branch: true
+          title: "v${{ steps.current-version.outputs.version }}"
+          body: $(yarn conventional-changelog)
+          labels: |
+            release
+      - run: |
+          echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
+          echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"

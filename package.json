@@ -1,0 +1,14 @@
+{
+  "name": "my-npm-publish-actions",
+  "version": "1.0.0",
+  "scripts": {
+    "check-version": "conventional-recommended-bump -p conventionalcommits",
+    "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md"
+  },
+  "devDependencies": {
+    "conventional-changelog": "^3.1.23",
+    "conventional-changelog-cli": "^2.1.0",
+    "conventional-recommended-bump": "^6.0.10",
+    "standard-changelog": "^2.0.24"
+  }
+}
