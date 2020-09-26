@@ -3,6 +3,7 @@ name: Build and Check
 on:
   push:
   pull_request:
+    types: [opened]
 
 jobs:
   build:
