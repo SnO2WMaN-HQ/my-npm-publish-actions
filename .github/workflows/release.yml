@@ -19,6 +19,10 @@ jobs:
         with:
           node-version: 12
           registry-url: "https://npm.pkg.github.com"
+      - name: Git Identity
+        run: |
+          git config --global user.name 'SnO2WMaN'
+          git config --global user.email 'SnO2WMaN@users.noreply.github.com'
       - run: yarn install --frozen-lockfile
 
       - name: Manually version up
@@ -47,6 +51,7 @@ jobs:
           labels: |
             release
 
-      - run: |
+      - name: Pull Request Info
+        run: |
           echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
           echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
