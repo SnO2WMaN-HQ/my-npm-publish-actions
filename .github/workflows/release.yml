@@ -20,16 +20,23 @@ jobs:
           node-version: 12
           registry-url: "https://npm.pkg.github.com"
       - run: yarn install --frozen-lockfile
-      - run: echo "$(which git)"
-      - if: github.event.inputs.version
+
+      - name: Manually version up
+        if: github.event.inputs.version
         run: npm version ${{ github.event.inputs.version }}
-      - if: ${{ !github.event.inputs.version }}
+
+      - name: Automatically selected version by conventional commits
+        if: ${{ !github.event.inputs.version }}
         run: npm version $(yarn conventional-recommended-bump -p conventionalcommits)
-      - id: current-version
+
+      - name: Get current package version
+        id: current-version
         run: |
           version=$(node -p 'require("./package.json").version')
           echo "::set-output name=version::${version}"
-      - uses: peter-evans/create-pull-request@v3
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
         id: cpr
         if: ${{ success() }}
         with:
@@ -39,6 +46,7 @@ jobs:
           body: $(yarn conventional-changelog)
           labels: |
             release
+
       - run: |
           echo "Pull Request Number - ${{ steps.cpr.outputs.pull-request-number }}"
           echo "Pull Request URL - ${{ steps.cpr.outputs.pull-request-url }}"
