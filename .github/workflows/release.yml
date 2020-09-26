@@ -33,6 +33,9 @@ jobs:
         if: ${{ !github.event.inputs.version }}
         run: npm version $($(yarn bin conventional-recommended-bump) -p conventionalcommits)
 
+      - name: Check if can npm publish
+        run: $(yarn bin can-npm-publish) --verbose
+
       - name: Get current package version
         id: current-version
         run: |
