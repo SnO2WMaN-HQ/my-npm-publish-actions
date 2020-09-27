@@ -1,17 +1,23 @@
-name: Release
+name: Publish
 
 on:
-  release:
-    type: [released]
+  pull_request:
+    types: [closed]
+    branches:
+      - master
 
 env:
   CI: true
 
 jobs:
-  publish:
+  publish-github-packages:
+    name: Publish to GitHub Packages
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
       - uses: actions/setup-node@v1
         with:
           node-version: 12
