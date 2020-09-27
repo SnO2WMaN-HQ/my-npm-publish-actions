@@ -50,14 +50,3 @@ jobs:
           body: ${{ steps.conventional-changelog.outputs.body }}
           labels: |
             release
-
-      - uses: actions/create-release@v1
-        id: create-release
-        with:
-          tag_name: v${{ steps.package-version.outputs.version }}
-          release_name: v${{ steps.package-version.outputs.version }}
-          body: ${{ steps.conventional-changelog.outputs.body }}
-          draft: false
-          prerelease: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
