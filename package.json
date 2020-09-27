@@ -1,13 +1,36 @@
 {
   "name": "@sno2wman-hq/npm-publish-with-gh-actions",
   "version": "1.0.0",
+  "homepage": "https://github.com/SnO2WMaN-HQ/my-npm-publish-actions#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SnO2WMaN-HQ/my-npm-publish-actions.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SnO2WMaN-HQ/my-npm-publish-actions/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://npm.pkg.github.com/"
+  },
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": [
     "lib"
   ],
+  "directories": {
+    "lib": "lib"
+  },
   "scripts": {
     "build": "tsc -b tsconfig.build.json",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "run-s -cn lint:*",
+    "lint:eslint": "eslint . --ext .js,.ts",
+    "lint:prettier": "prettier --check **/*.{json,yml,yaml,md}",
+    "fmt": "run-s -cn fmt:*",
+    "fmt:eslint": "yarn lint:eslint --fix",
+    "fmt:prettier": "yarn lint:prettier --write",
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s && git add CHANGELOG.md"
   },
   "devDependencies": {
