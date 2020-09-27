@@ -10,9 +10,36 @@ env:
   CI: true
 
 jobs:
+  create-release:
+    name: Create a GitHub Release
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 12
+      - run: yarn install --frozen-lockfile
+      - run: yarn build
+
+      - id: conventional-changelog
+        run: |
+          echo "::set-output name=body::$(eval $(yarn bin conventional-changelog))"
+
+      - uses: actions/create-release@v1
+        id: create-release
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{ github.ref }}
+          body: ${{ steps.conventional-changelog.outputs.body }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   publish-github-packages:
     name: Publish to GitHub Packages
-    if: github.event.pull_request.merged == true
+    needs: [create-release]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

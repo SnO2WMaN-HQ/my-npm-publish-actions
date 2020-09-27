@@ -1,4 +1,4 @@
-name: Create a Release Pull Request
+name: Create a Release pull request
 
 on:
   workflow_dispatch:
@@ -41,18 +41,20 @@ jobs:
         if: ${{ !github.event.inputs.version }}
         run: npm version $($(yarn bin conventional-recommended-bump) -p conventionalcommits)
 
-      - id: package-version
+      - name: Get bumped version
+        id: package-version
         run: |
           version=$(node -p 'require("./package.json").version')
           echo "::set-output name=version::${version}"
 
-      - id: pull-request-info
+      - name: Create pull request Info
+        id: pull-request-info
         run: |
           echo "::set-output name=branch::releases/v${{ steps.package-version.outputs.version }}"
           echo "::set-output name=title::$(git log -1 --pretty=%s)"
           echo "::set-output name=body::$(eval $(yarn bin conventional-changelog))"
 
-      - name: Create Pull Request
+      - name: Create pull request
         uses: peter-evans/create-pull-request@v3
         with:
           branch: ${{ steps.pull-request-info.outputs.branch }}
