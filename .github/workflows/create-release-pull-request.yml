@@ -49,18 +49,15 @@ jobs:
       - id: pull-request-info
         run: |
           echo "::set-output name=branch::releases/v${{ steps.package-version.outputs.version }}"
-          echo "::set-output name=title::${git log -1 --pretty=%s}"
-
-      - id: conventional-changelog
-        run: |
+          echo "::set-output name=title::$(git log -1 --pretty=%s)"
           echo "::set-output name=body::$(eval $(yarn bin conventional-changelog))"
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v3
         with:
           branch: ${{ steps.pull-request-info.outputs.branch }}
-          delete-branch: true
           title: ${{ steps.pull-request-info.outputs.title }}
-          body: ${{ steps.conventional-changelog.outputs.body }}
+          body: ${{ steps.pull-request-info.outputs.body }}
+          delete-branch: true
           labels: |
             release
